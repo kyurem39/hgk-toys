@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Project_64130980.Models.KhachHang>
+
+@{
+    ViewBag.Title = "Khách hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var grid = new WebGrid(Model, canPage: true, defaultSort: "MaKH", rowsPerPage: 5);
+}
+
+<h2>Danh sách khách hàng</h2>
+
+@using (Html.BeginForm("TimKiemKhachHang", "KhachHangs_64130980", FormMethod.Get))
+{
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" name="searchQuery" class="form-control" placeholder="Nhập họ tên hoặc số điện thoại" value="@Request.QueryString["searchQuery"]" />
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                @Html.ActionLink("Làm mới", "Index", null, new { @class = "btn btn-secondary" })
+            </span>
+        </div>
+    </div>
+}
+
+<hr />
+
+<p>
+    @Html.ActionLink("Thêm", "Create", null, new { @class = "btn btn-outline-success", @style = "padding: 10px 20px;" })
+</p>
+
+<head>
+    <style type="text/css">
+        .grid-footer {
+            color: #000;
+            font: 17px Calibri;
+            text-align: center;
+            font-weight: bold;
+        }
+
+            .grid-footer a {
+                background-color: #ffffff;
+                color: blue;
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                padding: 1px 10px 2px 10px;
+            }
+
+                .grid-footer a:active, a:hover {
+                    color: #FFAD33;
+                    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                }
+
+        .alternatingRowStyle {
+            background-color: aliceblue;
+        }
+
+        table .table1 {
+            text-align: left;
+            margin-left: 0px;
+            margin-right: 0px;
+            width: 800px;
+        }
+
+        .tr, .td {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<div id="gridContent">
+    @ViewBag.TB
+    @grid.GetHtml(
+        tableStyle: "table table-bordered table-hover",
+        footerStyle: "grid-footer",
+        fillEmptyRows: true,
+        mode: WebGridPagerModes.Numeric,
+        alternatingRowStyle: "alternatingRowStyle",
+        columns: new[]
+        {
+        grid.Column("STT",format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+        grid.Column("MaKH","Mã"), //the model fields to display
+        grid.Column("HoTen","Họ tên"),
+        grid.Column("GioiTinh","Giới tính",format: (@item) => @item.GioiTinh==true?"Nam":"Nữ"),
+        grid.Column("SoDienThoai","Số điện thoại"),
+        grid.Column("Email","Email"),
+        grid.Column("DiaChi","Địa chỉ"),
+        grid.Column("Chức năng", format:
+@<text>
+    <a href="@Url.Action("Edit", new { id = item.MaKH})" class="edit-btn"><abbr title="Cập nhật dữ liệu"><img src="~/Images/Action/edit.png" width="20" height="20" /></abbr></a>
+    <a href="@Url.Action("Details", new { id = item.MakH})" class="edit-btn"><abbr title="Xem chi tiết"><img src="~/Images/Action/details.png" width="20" height="20" /></abbr></a>
+    <a href="@Url.Action("Delete", new { id = item.MaKH})" class="edit-btn"><abbr title="Xóa dữ liệu"><img src="~/Images/Action/delete.png" width="20" height="20" /></abbr></a>
+</text>),
+}
+)
+</div>

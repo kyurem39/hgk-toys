@@ -1,0 +1,90 @@
+﻿@model Project_64130980.Models.NhanVien
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string gtinh = "";
+    string quyen = "";
+}
+
+<h2>Thông tin nhân viên</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Họ tên
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HoTen)
+        </dd>
+
+        <dt>
+            Giới tính
+        </dt>
+
+        <dd>
+            @{if (Model.GioiTinh == true)
+                {
+                    gtinh = "Nam";
+                }
+                else
+                {
+                    gtinh = "Nữ";
+                }
+            }
+            @gtinh
+        </dd>
+
+        <dt>
+            Số điện thoại
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SoDienThoai)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            Mật khẩu
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MatKhau)
+        </dd>
+
+        <dt>
+            Quyền sử dụng
+        </dt>
+
+        <dd>
+            @{if (Model.QuyenSuDung == 0)
+                {
+                    quyen = "Quản lý";
+                }
+                else if (Model.QuyenSuDung == 1)
+                {
+                    quyen = "Nhân viên thường";
+                }
+                else if (Model.QuyenSuDung == 2)
+                {
+                    quyen = "Nhân viên giao hàng";
+                }
+            }
+            @quyen
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Sửa", "Edit", new { id = Model.MaNV }) |
+    @Html.ActionLink("Quay lại", "Index")
+</p>

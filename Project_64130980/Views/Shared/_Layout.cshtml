@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <style>
+        body {
+            padding-top: 70px;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-3px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link:hover {
+            color: yellow;
+        }
+
+        .nav-link.login:hover {
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .nav-link.logout:hover {
+            background-color: #dc3545;
+            color: #fff;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center me-3">
+                <img src="~/Images/logo.png" width="70" height="50" alt="Logo" />
+                @Html.ActionLink("HGK Toys", "Index", "Home", new { area = "" }, new { @class = "navbar-brand ms-2" })
+            </div>
+
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarContent" title="Toggle navigation" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto">
+                    @if (Session["Role"] != null)
+                    {
+                        string userRole = Session["Role"].ToString();
+
+                        // Nếu quyền là "0", hiển thị tất cả
+                        if (userRole == "0")
+                        {
+                            <li class="nav-item">@Html.ActionLink("Sản phẩm", "Index", "SanPhams_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Khách hàng", "Index", "KhachHangs_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Nhân viên", "Index", "NhanViens_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Đơn hàng", "Index", "GioHangs_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Thống kê", "Index", "ThongKe_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
+                        // Nếu quyền là "1", chỉ hiển thị sản phẩm và khách hàng
+                        else if (userRole == "1")
+                        {
+                            <li class="nav-item">@Html.ActionLink("Sản phẩm", "Index", "SanPhams_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Khách hàng", "Index", "KhachHangs_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Thống kê", "Index", "ThongKe_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
+                        // Nếu quyền là "2", chỉ hiển thị đơn hàng
+                        else if (userRole == "2")
+                        {
+                            <li class="nav-item">@Html.ActionLink("Đơn hàng", "Index", "GioHangs_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Thống kê", "Index", "ThongKe_64130980", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
+                    }
+                    else
+                    {
+                        // Nếu không có session hoặc không có quyền, ẩn toàn bộ menu
+                        // Chỉ hiển thị nút Đăng nhập
+                    }
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    @if (Session["Username"] != null)
+                    {
+                        <a style="color: #fff; font-size: 1em; padding-right: 15px;" href="@Url.Action("Details", "NhanViens_64130980", new { id = Session["UserID"] })">
+                            <abbr title="Xem chi tiết"><strong>@Session["Username"]</strong></abbr>
+                        </a>
+                        <span style="border-left: 1px solid #fff; height: 20px; margin: 0 10px;"></span>
+                        <a href="/Account_64130980/Logout" class="nav-link logout" style="color: #fff; padding: 5px 10px; text-decoration: none;">Đăng xuất</a>
+                    }
+                    else
+                    {
+                        <a href="/Account_64130980/Login" class="nav-link login" style="color: #fff; padding: 5px 10px; text-decoration: none;">Đăng nhập</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - HGK Toys</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

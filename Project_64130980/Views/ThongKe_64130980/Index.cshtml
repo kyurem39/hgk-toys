@@ -1,0 +1,145 @@
+﻿@model IEnumerable<Project_64130980.Models.GioHang>
+@{
+    ViewBag.Title = "Thống kê";
+    var sortedModel = ViewBag.SortedModel as IEnumerable<Project_64130980.Models.GioHang>;
+    var lowStockProducts = ViewBag.LowStockProducts as IEnumerable<Project_64130980.Models.SanPham>;
+    string tinhtrang = "";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center" style="margin-top: 20px;">
+        <h2 class="mb-0">Đơn hàng gần đây</h2>
+        <a href="@Url.Action("Create", "GioHangs_64130980")" class="btn btn-success btn-lg">Thêm đơn hàng</a>
+    </div><br />
+    <div class="row justify-content-between">
+        @if (sortedModel == null || !sortedModel.Any())  // Kiểm tra nếu không có dữ liệu
+        {
+            <p>Không có thông tin đơn hàng gần đây.</p>
+        }
+        else
+        {
+            foreach (var item in sortedModel.Take(5))
+            {
+                <div class="col-12 col-sm-2 col-md-2 d-flex flex-column justify-content-between" style="background-color: #f0f4f8; margin: 10px; padding: 3px; text-align: center; border-radius: 5px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);">
+                    <p>
+                        @{
+                            if (item.TinhTrang == 0)
+                            {
+                                tinhtrang = "Đã tạo đơn";
+                            }
+                            else if (item.TinhTrang == 1)
+                            {
+                                tinhtrang = "Đang giao hàng";
+                            }
+                            else if (item.TinhTrang == 2)
+                            {
+                                tinhtrang = "Giao hàng thành công";
+                            }
+                            else
+                            {
+                                tinhtrang = "Không có thông tin về tình trạng";
+                            }
+                        }
+                        @tinhtrang
+                    </p>
+                    <h5>@Html.DisplayFor(modelItem => item.NgayDatHang)</h5>
+                    <p style="font-size: 18px; font-weight: bold; margin-top: 10px;">
+                        @item.TongTien.ToString("N0") VNĐ
+                    </p>
+                    <a class="btn btn-warning btn-sm" href="@Url.Action("Details", "GioHangs_64130980", new { id = item.SoHD })">
+                        Chi tiết
+                    </a>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+<!-- Nút thêm đơn hàng ở cuối -->
+
+
+<hr />
+
+<div class="container">
+    <div class="row">
+        <!-- Cột bên trái chứa sản phẩm gần hết -->
+        <div class="col-md-8">
+            <!-- Điều chỉnh kích thước cột ở đây -->
+            <div class="row justify-content-start">
+                <h4>Sản phẩm gần hết</h4>
+                @if (lowStockProducts == null || !lowStockProducts.Any())  // Kiểm tra nếu không có sản phẩm gần hết
+                {
+                    <p>Không có sản phẩm gần hết.</p>
+                }
+                else
+                {
+                    foreach (var product in lowStockProducts.Take(5))  // Hiển thị tối đa 5 sản phẩm gần hết
+                    {
+                        <div class="col-2 col-sm-2 col-md-2 d-flex flex-column justify-content-between" style="background-color: #f0f4f8; margin: 10px; padding: 3px; text-align: center; border-radius: 5px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);">
+                            <p>@product.MaSP</p>
+                            <img src="@Url.Content(product.AnhSanPham)" alt="@product.TenSP" style="width: 100%; height: auto;">
+                            <h5>@product.TenSP</h5>
+                            <p>Còn @product.SoLuong sản phẩm</p>
+                            <a class="btn btn-warning btn-sm" href="@Url.Action("Details", "SanPhams_64130980", new { id = product.MaSP })">
+                                Chi tiết
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Cột bên phải chứa đồ thị doanh thu -->
+        <div class="col-md-4">
+            <!-- Điều chỉnh kích thước cột đồ thị -->
+            <h4 style="text-align: center">Doanh thu tháng</h4>
+            <div class="chart-container" style="border: 2px solid #ddd; padding: 10px; border-radius: 5px; background-color: #f9f9f9;">
+                <canvas id="doanhThuChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Biểu đồ doanh thu (đã có trước)
+            $.ajax({
+                url: '/ThongKe_64130980/DoanhThu',
+                method: 'GET',
+                success: function (data) {
+                    const labels = data.map(item => `${item.Thang}/${item.Nam}`);
+                    const doanhThu = data.map(item => item.TongTien);
+
+                    const ctx = document.getElementById('doanhThuChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Doanh Thu (VND)',
+                                data: doanhThu,
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function (err) {
+                    console.error('Lỗi khi tải dữ liệu doanh thu:', err);
+                }
+            });
+        });
+    </script>
+}

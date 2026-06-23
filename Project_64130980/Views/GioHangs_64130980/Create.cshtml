@@ -1,0 +1,182 @@
+﻿@model Project_64130980.Models.GioHang
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Thêm đơn hàng</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.SoHD, "Số hoá đơn", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" value="@ViewBag.SoHD" disabled readonly class="form-control" />
+                @Html.ValidationMessageFor(model => model.SoHD, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NgayDatHang, "Ngày đặt hàng", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" value="@ViewBag.NgayDatHang" disabled readonly class="form-control" />
+                @Html.ValidationMessageFor(model => model.NgayDatHang, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.MaKH, "Khách hàng", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("MaKH", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.MaKH, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.MaNVGiaoHang, "Nhân viên giao hàng", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("MaNVGiaoHang", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.MaNVGiaoHang, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.LoaiThanhToan, "Loại thanh toán", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    Tiền mặt @Html.RadioButtonFor(model => model.LoaiThanhToan, "True", new { @checked = "checked" }) &nbsp;
+                    Chuyển khoản @Html.RadioButtonFor(model => model.LoaiThanhToan, "False")
+                    @Html.ValidationMessageFor(model => model.LoaiThanhToan, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TinhTrang, "Tình trạng", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    Đã tạo đơn @Html.RadioButtonFor(model => model.TinhTrang, "0", new { @checked = "checked" }) &nbsp;
+                    Đang giao hàng @Html.RadioButtonFor(model => model.TinhTrang, "1") &nbsp;
+                    Giao hàng thành công @Html.RadioButtonFor(model => model.TinhTrang, "2")
+                    @Html.ValidationMessageFor(model => model.TinhTrang, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h4>Chi tiết</h4>
+        <table class="table" id="chiTietGioHangTable">
+            <thead>
+                <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Các dòng chi tiết đơn hàng sẽ được thêm tại đây -->
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-primary" onclick="addRow()">Thêm sản phẩm</button>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Tạo" class="btn btn-success" />
+            </div>
+        </div>
+
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Quay lại", "Index")
+</div>
+
+@section Scripts {
+    <script>
+        function addRow() {
+            var index = $('#chiTietGioHangTable tbody tr').length;
+            var newRow = `
+                <tr>
+                    <td>
+                        <select name="chiTietGioHangs[${index}].MaSP" class="form-control" onchange="updateGiaBan(this, ${index})">
+                            <option value="">Chọn sản phẩm</option>
+                            @foreach (var item in ViewBag.ListSanPham as SelectList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="chiTietGioHangs[${index}].SoLuong" class="form-control" min="1" value="1" />
+                    </td>
+                    <td>
+                        <input type="text" name="chiTietGioHangs[${index}].DonGia" class="form-control giaBanInput" readonly />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="removeRow(this)">Xóa</button>
+                    </td>
+                </tr>`;
+            $('#chiTietGioHangTable tbody').append(newRow);
+        }
+
+        function removeRow(button) {
+            $(button).closest('tr').remove();
+        }
+
+        function updateGiaBan(selectElement, index) {
+            var maSP = $(selectElement).val();
+            if (maSP) {
+                $.ajax({
+                    url: '@Url.Action("GetGiaBan", "GioHangs_64130980")',
+                    type: 'GET',
+                    data: { maSP: maSP },
+                    success: function (data) {
+                        $(`input[name="chiTietGioHangs[${index}].DonGia"]`).val(data);
+                    },
+                    error: function () {
+                        alert("Không thể lấy giá bán. Vui lòng thử lại.");
+                    }
+                });
+            } else {
+                $(`input[name="chiTietGioHangs[${index}].DonGia"]`).val('');
+            }
+        }
+
+        function validateForm() {
+            var rows = $('#chiTietGioHangTable tbody tr');
+            var valid = true;
+
+            // Kiểm tra mỗi dòng chi tiết giỏ hàng
+            rows.each(function () {
+                var selectElement = $(this).find('select[name*="MaSP"]');
+                if (selectElement.val() === "") {
+                    valid = false;
+                    alert("Vui lòng chọn sản phẩm cho tất cả các dòng.");
+                    return false; // Dừng kiểm tra khi tìm thấy dòng không hợp lệ
+                }
+            });
+
+            if (rows.length < 1) {
+                alert("Vui lòng thêm ít nhất một sản phẩm vào giỏ hàng.");
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        $("form").submit(function (e) {
+            if (!validateForm()) {
+                e.preventDefault(); // Ngừng gửi form nếu không hợp lệ
+            }
+        });
+
+    </script>
+}

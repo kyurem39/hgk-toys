@@ -1,0 +1,42 @@
+## Ignore Visual Studio temporary files, build results, and user-specific files.
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userbgc
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Re]leases/
+x64/
+x86/
+build/
+bin/
+obj/
+
+# NuGet Packages
+packages/
+!**/packages/repositories.config
+
+# Visual Studio 2015/2017/2019/2022 cache directory
+.vs/
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Windows image analyses cache
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/

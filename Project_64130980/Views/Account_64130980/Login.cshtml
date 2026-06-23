@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <style>
+        /* To center the container in the middle of the screen */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70vh; /* Full viewport height */
+        }
+
+        .login-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 300px; /* Adjust as needed */
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left; /* Align label to the left */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+
+        .alert-danger {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h2 style="font-weight: bold">XIN CHÀO!</h2>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        <label for="username" class="control-label">Số điện thoại</label>
+                        <input type="text" name="username" id="username" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="control-label">Mật khẩu</label>
+                        <input type="password" name="password" id="password" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                    </div>
+
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+</body>
+</html>
